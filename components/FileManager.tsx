@@ -23,13 +23,20 @@ export async function saveFile(data:any,file:string) {
       )
       saveFile(data,file)
     }
-    var list = JSON.parse(readData)
-    var newList = [...list, data]
+
+    const list = JSON.parse(readData)
+    var data_save = data
+    const length = list.length
+    data_save["slot"] = length
+    
+    var newList = [...list, data_save]
     await FileSystem.writeAsStringAsync(
       FileSystem.documentDirectory! + file,
       JSON.stringify(newList)
     )
   }
+
+
 export async function saveAPI(api:string) {
     const data = {"api":api}
     await FileSystem.writeAsStringAsync(
@@ -45,4 +52,15 @@ export async function resetFile(file:string) {
         FileSystem.documentDirectory! + file,
         "[]"
       )
+}
+
+export async function removeFile(id:string) {
+  var readData = JSON.parse(await readFile("settings.json"))
+  var list = readData.filter(obj => obj.id !== id )
+  console.log(list)
+  console.log(id)
+  await FileSystem.writeAsStringAsync(
+    FileSystem.documentDirectory! + "settings.json",
+    JSON.stringify(list)
+  )
 }

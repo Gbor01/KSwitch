@@ -1,10 +1,11 @@
-import { View, Pressable, StyleSheet } from 'react-native';
+import { View, Pressable, StyleSheet} from 'react-native';
 import Ionicons from '@expo/vector-icons/Ionicons';
 import { ThemedText } from '@/components/ThemedText';
 import { useColorScheme } from '@/hooks/useColorScheme';
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useState, useRef } from 'react';
 import { readFile } from './FileManager';
 import TcpSocket from 'react-native-tcp-socket';
+import { removeFile } from './FileManager';
 
 var auth_key = "";
 var ip_address = "";
@@ -132,20 +133,21 @@ async function switchTOSRDevice(data: string, repeat: boolean) {
     }
     await delay(300)
     client.write(data)
-    console.log("Data written")
     await delay(500)
     client.end()
   });
-
 }
 
-const ShellyButton = (title: string, id: string, repeat: boolean) => {
+const ShellyButton = (title: string, id: string, repeat: boolean,onRemove:any) => {
   const [isPressed, setIsPressed] = useState(false);
+  const [onHold, setOnHold] = useState(0)
   const colorScheme = useColorScheme();
   const color = colorScheme === "dark" ? "white" : "black"
   const buttonBackground = colorScheme === "dark" ? "#151718" : "white"
   const pressedButton = colorScheme === "dark" ? "white" : "black"
   const [isDisabled, setIsDisabled] = useState(false);
+  const [removeDisabled, setRemoveDisabled] = useState(true);
+  
   useEffect(() => {
     const loadInitialValue = async () => {
       const initialValue = await fetchShellyData(auth_key, id);
@@ -160,7 +162,21 @@ const ShellyButton = (title: string, id: string, repeat: boolean) => {
     setIsDisabled(false)
   };
 
-  return <View style={{ borderWidth: 2, borderColor: color, margin: 25, alignSelf: "flex-start", borderRadius: 25, flex: 1, }}>
+
+  const removeButton = async () => {
+    await removeFile(id)
+    onRemove()
+  }
+
+  return <Pressable onLongPress={() => {setOnHold(1); setRemoveDisabled(false)}} onTouchEnd={async () => {await delay(3000); setOnHold(0); setRemoveDisabled(true)}} style={{ borderWidth: 2, borderColor: color, margin: 25, alignSelf: "flex-start", borderRadius: 25, flex: 1, }}>
+  <View>
+    <Pressable
+    style={[ { position:"absolute", alignSelf:"flex-end", padding:10, opacity:onHold }]} disabled={removeDisabled} onPress={()=>{
+      removeButton()
+      
+    }}>
+    <Ionicons name="trash" size={36} style={{color: pressedButton }} />
+  </Pressable>
     <Pressable
       style={[isPressed ? stlyes.buttonPressed : stlyes.button, { backgroundColor: buttonBackground, shadowColor: pressedButton, }]}
       disabled={isDisabled}
@@ -168,7 +184,8 @@ const ShellyButton = (title: string, id: string, repeat: boolean) => {
       <Ionicons name="power" size={48} style={{ color: isPressed ? pressedButton : "grey" }} />
     </Pressable>
     <ThemedText style={{ alignSelf: "center", marginBottom: 25, fontWeight: "bold" }}>{title}</ThemedText>
-  </View>;
+  </View>
+  </Pressable>;
 }
 
 // https://github.com/amorphic/tosr0x
@@ -177,8 +194,8 @@ const switches = {
   "0": { "0": "n", "1": "o", "2": "p", "3": "q", "4": "r", "5": "s", "6": "t", "7": "u", "8": "v" },
 }
 
-const TOSRButton = (title: string, id: string, repeat: boolean) => {
-  const [onHold, setOnHold] = useState(false)
+const TOSRButton = (title: string, id: string, repeat: boolean,onRemove:any) => {
+  const [onHold, setOnHold] = useState(0)
   const [isPressed, setIsPressed] = useState(false);
   const colorScheme = useColorScheme();
   const color = colorScheme === "dark" ? "white" : "black"
@@ -186,7 +203,9 @@ const TOSRButton = (title: string, id: string, repeat: boolean) => {
   const pressedButton = colorScheme === "dark" ? "white" : "black"
   const turnOn = switches["1"][id]
   const turnOff = switches["0"][id]
+  const [removeDisabled, setRemoveDisabled] = useState(true);
   const [isDisabled, setIsDisabled] = useState(false);
+
   useEffect(() => {
     const loadInitialValue = setInterval(() => {
 
@@ -198,6 +217,11 @@ const TOSRButton = (title: string, id: string, repeat: boolean) => {
     }, 500);
     return () => clearInterval(loadInitialValue);
   }, []);
+  const removeButton = async () => {
+    await removeFile(id)
+    onRemove()
+  }
+
 
   const handlePress = async () => {
     if (repeat == true) {
@@ -221,17 +245,28 @@ const TOSRButton = (title: string, id: string, repeat: boolean) => {
   };
   // Ui. a fenti cucchoz: a  sok delay az időzítés miatt kell mert különben megőrül a kapcsoló. 
 
-  return <View style={{ borderWidth: 2, borderColor: color, margin: 25, alignSelf: "flex-start", borderRadius: 25, flex: 1, }}>
-    <Ionicons name="trash" size={48} style={{ alignSelf: "flex-end", margin: 10 }} />
-    <Pressable
-      style={[isPressed ? stlyes.buttonPressed : stlyes.button, { backgroundColor: buttonBackground, shadowColor: pressedButton, }]}
-      disabled={isDisabled}
-      onPress={handlePress}>
-      <Ionicons name="power" size={48} style={{ color: isPressed ? pressedButton : "grey" }} />
-    </Pressable>
-    <ThemedText style={{ alignSelf: "center", marginBottom: 25, fontWeight: "bold" }}>{title}</ThemedText>
+  return <Pressable onLongPress={() => {setOnHold(1); setRemoveDisabled(false)}} onTouchEnd={async () => {await delay(3000); setOnHold(0); setRemoveDisabled(true)}} style={{ borderWidth: 2, borderColor: color, margin: 25, alignSelf: "flex-start", borderRadius: 25, flex: 1, }}>
+    <View>
+  <Pressable
+    style={[ { position:"absolute", alignSelf:"flex-end", padding:10, opacity:onHold }]} disabled={removeDisabled} onPress={()=>{
+      removeButton()
+      
+    }}>
+    <Ionicons name="trash" size={36} style={{color: pressedButton }} />
+  </Pressable>
 
-  </View>;
+  
+  <Pressable
+    style={[isPressed ? stlyes.buttonPressed : stlyes.button, { backgroundColor: buttonBackground, shadowColor: pressedButton, }]}
+    disabled={isDisabled}
+    onPress={handlePress}>
+    <Ionicons name="power" size={48} style={{ color: isPressed ? pressedButton : "grey" }} />
+  </Pressable>
+  <ThemedText style={{ alignSelf: "center", marginBottom: 25, fontWeight: "bold" }}>{title}</ThemedText>
+
+</View></Pressable>
+
+  
 }
 
 const components = {
@@ -239,8 +274,9 @@ const components = {
   "tosr": TOSRButton
 }
 
-export const SwitchButton = ({ title, id, type, repeat }) => {
-  return components[type](title, id, repeat);
+export const SwitchButton = ({ title, id, type, repeat,onRemove }) => {
+  
+  return components[type](title, id, repeat,onRemove);
 }
 
 const stlyes = StyleSheet.create({

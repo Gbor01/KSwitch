@@ -42,9 +42,6 @@ export const Shelly = () => {
     const textColor = colorScheme === "dark" ? "white" : "#151718"
     const [name, onChangeName] = useState('');
     const [id, onChangeID] = useState('');
-
-
-
     const styles = StyleSheet.create({
         input: {
             width: "90%",
