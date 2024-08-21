@@ -2,7 +2,7 @@ import { View, Pressable, StyleSheet} from 'react-native';
 import Ionicons from '@expo/vector-icons/Ionicons';
 import { ThemedText } from '@/components/ThemedText';
 import { useColorScheme } from '@/hooks/useColorScheme';
-import React, { useEffect, useState, useRef } from 'react';
+import React, { useEffect, useState } from 'react';
 import { readFile } from './FileManager';
 import TcpSocket from 'react-native-tcp-socket';
 import { removeFile } from './FileManager';

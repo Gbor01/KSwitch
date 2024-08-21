@@ -16,7 +16,7 @@ export default function HomeScreen() {
     const data = JSON.parse(await readFile("settings.json"))
     let data_filter = data.filter((obj, index, self) =>
       index === self.findIndex((t) => (
-          t === obj || t.id === obj.id
+        t.id === obj.id
       ))
     );
     
