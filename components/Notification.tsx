@@ -1,6 +1,5 @@
 import { Text, Pressable, StyleSheet, Animated, Easing } from 'react-native';
 import Ionicons from '@expo/vector-icons/Ionicons';
-
 import { useColorScheme } from '@/hooks/useColorScheme';
 import React, { useEffect,useRef } from 'react';
 function delay(ms: number) {
