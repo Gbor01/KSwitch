@@ -35,13 +35,29 @@ function Checkbox({ onChange, checked }) {
         </Pressable>
     );
 }
-export const Shelly = () => {
+export const Shelly = ({notify}) => {
 
     const colorScheme = useColorScheme();
     const color = colorScheme === "dark" ? "#151718" : "white"
     const textColor = colorScheme === "dark" ? "white" : "#151718"
     const [name, onChangeName] = useState('');
     const [id, onChangeID] = useState('');
+
+    async function onPress() {
+        if (name.length !== 0 && id.length !== 0)
+        {
+
+            await saveFile({ title: name, id: id, type: "shelly", shouldRepeat: false }, "settings.json")
+            notify("Shelly button added!",1)
+
+        }
+        else
+        {
+            notify("Name and ID cannot be empty",0)
+        }
+        
+    }
+
     const styles = StyleSheet.create({
         input: {
             width: "90%",
@@ -89,13 +105,13 @@ export const Shelly = () => {
                     placeholderTextColor={textColor}>
 
                 </TextInput>
-                <Pressable style={styles.button} onPress={() => { saveFile({ title: name, id: id, type: "shelly", shouldRepeat: false }, "settings.json") }}><ThemedText style={styles.text}>Add Switch</ThemedText></Pressable>
+                <Pressable style={styles.button} onPress={onPress}><ThemedText style={styles.text}>Add Switch</ThemedText></Pressable>
             </ThemedView>
         </SafeAreaView>
     )
 };
 
-export const TOSR = () => {
+export const TOSR = ({notify}) => {
 
     const colorScheme = useColorScheme();
     const color = colorScheme === "dark" ? "#151718" : "white"
@@ -103,6 +119,18 @@ export const TOSR = () => {
     const [name, onChangeName] = useState('');
     const [id, onChangeID] = useState('');
     const [shouldRepeat, setRepeat] = useState(false)
+
+    async function onPress() {
+        if (name.length !== 0 && id.length !== 0)
+        {
+            await saveFile({ title: name, id: id, type: "tosr", shouldRepeat: shouldRepeat }, "settings.json")
+            notify("TOSR button added!",1)
+        }
+        else
+        {
+            notify("Name and number cannot be empty",0)
+        }
+    }
 
     const styles = StyleSheet.create({
         input: {
@@ -170,7 +198,7 @@ export const TOSR = () => {
                     <Checkbox onChange={() => setRepeat(!shouldRepeat)} checked={shouldRepeat} />
                     <Text style={styles.paragraph}>Should repeat?</Text>
                 </ThemedView>
-                <Pressable style={styles.button} onPress={() => { saveFile({ title: name, id: id, type: "tosr", shouldRepeat: shouldRepeat }, "settings.json") }}><ThemedText style={styles.text}>Add Switch</ThemedText></Pressable>
+                <Pressable style={styles.button} onPress={onPress}><ThemedText style={styles.text}>Add Switch</ThemedText></Pressable>
 
 
             </ThemedView>

@@ -9,6 +9,7 @@ import { Shelly, TOSR } from '@/components/Settings';
 import { TextInput } from 'react-native';
 import { Pressable } from 'react-native';
 import { saveAPI, saveIP,resetFile } from '@/components/FileManager';
+import { Notification } from '@/components/Notification';
 
 export default function SettingsScreen() {
   const colorScheme = useColorScheme();
@@ -24,6 +25,14 @@ export default function SettingsScreen() {
 
 
   ];
+  const [isNotificationVisible, setNotificationVisible] = useState(false);
+  const [text, setText] = useState("")
+  const [type, setType] = useState(0)
+  async function notify(text: string, type: number) {
+    setText(text)
+    setType(type)
+    setNotificationVisible(true)
+  }
   const components = {
     "shelly": Shelly,
     "tosr": TOSR
@@ -135,17 +144,22 @@ export default function SettingsScreen() {
           placeholderTextColor={textColor}>
 
         </TextInput>
-        <Pressable style={styles.button}><ThemedText style={styles.text} onPress={() => { saveAPI(api); alert("Restart the app to take effect.") }}>Set API key</ThemedText></Pressable>
+        <Pressable style={styles.button}><ThemedText style={styles.text} onPress={() => { saveAPI(api); notify("Restart the app to take effect.",1) }}>Set API key</ThemedText></Pressable>
         <TextInput style={styles.input}
           onChangeText={onChangeIP}
           placeholder="IP Adress with port"
           placeholderTextColor={textColor}>
 
         </TextInput>
-        <Pressable style={styles.button} onPress={() => { saveIP(ip); alert("Restart the app to take effect.") }}><ThemedText style={styles.text}>Set IP</ThemedText></Pressable>
-        <Pressable style={styles.button} onPress={() => { resetFile("settings.json"); }}><ThemedText style={styles.text}>Reset settings</ThemedText></Pressable>
+        <Pressable style={styles.button} onPress={() => { saveIP(ip); notify("Restart the app to take effect.",1) }}><ThemedText style={styles.text}>Set IP</ThemedText></Pressable>
+        <Pressable style={styles.button} onPress={() => { resetFile("settings.json");notify("Settings re-set.",1) }}><ThemedText style={styles.text}>Reset settings</ThemedText></Pressable>
       </ThemedView>
-
+      <Notification
+        text={text}
+        type={type}
+        isVisible={isNotificationVisible}
+        onClose={() => setNotificationVisible(false)}
+      />
     </SafeAreaView>
 
 

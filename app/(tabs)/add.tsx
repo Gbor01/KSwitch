@@ -5,12 +5,20 @@ import { SafeAreaView } from 'react-native-safe-area-context';
 import { useState } from 'react';
 import { Dropdown } from 'react-native-element-dropdown';
 import { Shelly, TOSR } from '@/components/Settings';
-
+import { Notification } from '@/components/Notification';
 export default function AddScreen() {
   const colorScheme = useColorScheme();
   const color = colorScheme === "dark" ? "#151718" : "white"
   const textColor = colorScheme === "dark" ? "white" : "#151718"
   const [selectedMenu, onMenuChange] = useState("shelly")
+  const [isNotificationVisible, setNotificationVisible] = useState(false);
+  const [text, setText] = useState("")
+  const [type, setType] = useState(0)
+  async function notify(text: string, type: number) {
+    setText(text)
+    setType(type)
+    setNotificationVisible(true)
+  }
   const data = [
     { label: 'Shelly', value: "shelly" },
     { label: 'TOSR Arduino', value: 'tosr' },
@@ -97,8 +105,9 @@ export default function AddScreen() {
   return (
 
     <SafeAreaView style={{ backgroundColor: color, paddingTop: 0, flex: 1 }}>
+      
       <ThemedView style={{ backgroundColor: color, flexDirection: "column" }}>
-
+        
         <Dropdown
           style={[styles.dropdown, { borderColor: textColor }]}
           placeholderStyle={styles.placeholderStyle}
@@ -122,7 +131,13 @@ export default function AddScreen() {
 
 
       </ThemedView>
-      <Component></Component>
+      <Component notify={notify}></Component>
+      <Notification
+          text={text}
+          type={type}
+          isVisible={isNotificationVisible}
+          onClose={() => setNotificationVisible(false)}
+        />
     </SafeAreaView>
 
 

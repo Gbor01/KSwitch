@@ -57,8 +57,6 @@ export async function resetFile(file:string) {
 export async function removeFile(id:string) {
   var readData = JSON.parse(await readFile("settings.json"))
   var list = readData.filter(obj => obj.id !== id )
-  console.log(list)
-  console.log(id)
   await FileSystem.writeAsStringAsync(
     FileSystem.documentDirectory! + "settings.json",
     JSON.stringify(list)
