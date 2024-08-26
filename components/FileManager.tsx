@@ -31,8 +31,8 @@ export async function saveFile(data: any, file: string) {
   )
 }
 
-export async function saveAPI(api: string) {
-  const data = { "api": api }
+export async function saveAPI(api: string,url: string) {
+  const data = { "api": api, "server": url}
   await FileSystem.writeAsStringAsync(
     FileSystem.documentDirectory! + "api.json", JSON.stringify(data))
 }

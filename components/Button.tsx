@@ -10,7 +10,7 @@ import { removeFile } from './FileManager';
 var auth_key = "";
 var ip_address = "";
 var message = ""
-
+var url = ""
 // https://github.com/amorphic/tosr0x és ChatGPT
 function convertHexToInt(hexChars: string): number[] {
   try {
@@ -39,6 +39,7 @@ async function setup() {
     return 0;
   }
   auth_key = JSON.parse(key)["api"]
+  url = JSON.parse(key)["server"]
 
   key = await readFile("ip.json")
   if (key.length <= 0) {
@@ -51,7 +52,7 @@ setup()
 
 async function fetchShellyData(auth_key: string, id: string): Promise<boolean> {
   var status = false
-  await fetch('https://shelly-11-eu.shelly.cloud/device/status?id=' + id + '&auth_key=' + auth_key + '', {
+  await fetch(url+'/device/status?id=' + id + '&auth_key=' + auth_key + '', {
     method: 'POST',
     headers: {
       'Content-Type': 'application/x-www-form-urlencoded',
@@ -66,7 +67,7 @@ async function fetchShellyData(auth_key: string, id: string): Promise<boolean> {
 async function switchShellyDevice(auth_key: string, id: string): Promise<boolean> {
   var status = false
   if (await fetchShellyData(auth_key, id) == false) {
-    await fetch('https://shelly-11-eu.shelly.cloud/device/relay/control?auth_key=' + auth_key + '', {
+    await fetch(url+'/device/relay/control?auth_key=' + auth_key + '', {
       method: 'POST',
       headers: {
         'Content-Type': 'application/x-www-form-urlencoded',
@@ -79,7 +80,7 @@ async function switchShellyDevice(auth_key: string, id: string): Promise<boolean
     });
   }
   else {
-    await fetch('https://shelly-11-eu.shelly.cloud/device/relay/control?auth_key=' + auth_key + '', {
+    await fetch(url+'/device/relay/control?auth_key=' + auth_key + '', {
       method: 'POST',
       headers: {
         'Content-Type': 'application/x-www-form-urlencoded',
@@ -274,7 +275,7 @@ const components = {
   "tosr": TOSRButton
 }
 
-export const SwitchButton = ({ title, id, type, repeat, onRemove, notification }) => {
+export const SwitchButton = ({  title, id, type, repeat, onRemove, notification }) => {
 
   return components[type](title, id, repeat, onRemove, notification);
 }

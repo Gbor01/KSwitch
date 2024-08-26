@@ -17,6 +17,7 @@ export default function SettingsScreen() {
   const textColor = colorScheme === "dark" ? "white" : "#151718"
   const [selectedColor, onColorChange] = useState(colorScheme?.toString())
   const [api, onChangeAPI] = useState('');
+  const [url, onChangeURL] = useState('https://shelly-11-eu.shelly.cloud');
   const [ip, onChangeIP] = useState('');
   const data = [
     { label: 'Use system', value: undefined },
@@ -137,6 +138,12 @@ export default function SettingsScreen() {
     <SafeAreaView style={{ backgroundColor: color, paddingTop: 0, flex: 1 }}>
       <ThemedView style={{ backgroundColor: color, flexDirection: "column", justifyContent: "center", alignItems: "center" }}>
 
+      <TextInput style={styles.input}
+          onChangeText={onChangeURL}
+          placeholder="Server URL"
+          placeholderTextColor={textColor} value={url}>
+          
+        </TextInput>
 
         <TextInput style={styles.input}
           onChangeText={onChangeAPI}
@@ -144,7 +151,7 @@ export default function SettingsScreen() {
           placeholderTextColor={textColor}>
 
         </TextInput>
-        <Pressable style={styles.button}><ThemedText style={styles.text} onPress={() => { saveAPI(api); notify("Restart the app to take effect.",1) }}>Set API key</ThemedText></Pressable>
+        <Pressable style={styles.button}><ThemedText style={styles.text} onPress={() => { saveAPI(api,url); notify("Restart the app to take effect.",1) }}>Set API key</ThemedText></Pressable>
         <TextInput style={styles.input}
           onChangeText={onChangeIP}
           placeholder="IP Adress with port"
