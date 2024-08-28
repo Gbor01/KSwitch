@@ -3,12 +3,10 @@ import Ionicons from '@expo/vector-icons/Ionicons';
 import { ThemedText } from '@/components/ThemedText';
 import { useColorScheme } from '@/hooks/useColorScheme';
 import React, { useEffect, useState } from 'react';
-import { readFile } from './FileManager';
+import { readFile,removeFile } from './FileManager';
 import TcpSocket from 'react-native-tcp-socket';
-import { removeFile } from './FileManager';
-
-var auth_key = "";
-var ip_address = "";
+var auth_key = ""
+var ip_address = ""
 var message = ""
 var url = ""
 // https://github.com/amorphic/tosr0x és ChatGPT
